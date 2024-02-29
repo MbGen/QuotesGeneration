@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RNN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  </head>
+  <body>
+    <article class="wrapper">
+        <div class="block">
+            <div class="block">
+                <input id="first_word" name="start_word" class="input is-primary is-medium" type="text" placeholder="Write word">
+                <button class="button is-primary" id="generate_button">Generate</button>
+            </div>
+
+            <div class="block">
+                <textarea id="generation_result" class="textarea is-danger" readonly placeholder="output"></textarea>
+            </div>
+        </div>
+
+    </article>
+  </body>
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+
+<script type="text/javascript" charset="utf-8">
+
+    $(document).ready(function(){
+      // sending a connect request to the server.
+      var socket = io.connect('http://localhost:5000');
+
+
+      socket.on('json', function(msg){
+        const generated_text = msg['msg'];
+        $('#generation_result').val(generated_text);
+      });
+
+      function send_message_in_json() {
+        var msg = $('#first_word').val();
+
+        const json_ = {
+          msg: msg
+        };
+
+        socket.emit('json', json_);
+      };
+
+      // Получите ссылку на кнопку
+      var sendButton = document.getElementById('generate_button');
+
+      // Добавьте обработчик события нажатия на кнопку
+      sendButton.addEventListener('click', send_message_in_json);
+    });
+</script>
